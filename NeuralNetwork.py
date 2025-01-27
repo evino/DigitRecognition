@@ -52,9 +52,9 @@ class NeuralNetwork:
         self.weights2 -= learning_rate * dW2
         self.bias2 -= learning_rate * dB2
 
-    def cross_entropy_loss(y_true, y_pred):
-        # Clip predictions to avoid log(0) error and then compute the loss
-        epsilon = 1e-12  # To avoid log(0)
-        y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
-        return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
+def cross_entropy_loss(y_true, y_pred):
+    # Clip predictions to avoid log(0) error and then compute the loss
+    epsilon = 1e-12  # To avoid log(0)
+    y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
+    return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
 
