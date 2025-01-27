@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def GenerateImage(digit, size=(28, 28)):
+def generate_image(digit, size=(28, 28)):
     """
     Simulate a simple image of a digit.
 
@@ -30,5 +30,5 @@ def GenerateImage(digit, size=(28, 28)):
 
 if __name__ == "__main__":
     # Example usage: generate an image of the digit 5
-    img = GenerateImage(7)
+    img = generate_image(7)
     # No need for plt.show() in non-interactive environments
