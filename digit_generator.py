@@ -1,34 +1,49 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 def generate_image(digit, size=(28, 28)):
     """
-    Simulate a simple image of a digit.
+    Generate a clean simulated image of a digit.
 
     Args:
-    - digit (int): The digit to simulate in the image (0-9).
-    - size (tuple): The size of the image (default 28x28).
+    - digit (int): The digit to simulate (0-9).
+    - size (tuple): The size of the final image (default 28x28).
 
     Returns:
-    - np.array: The image as a NumPy array.
+    - np.array: The image as a NumPy array of shape (28, 28).
     """
-    # Create an empty image (28x28) with all zeros (black)
-    image = np.zeros(size)
-    
-    # Draw the digit in the middle of the image
-    plt.imshow(image, cmap="gray")
-    plt.text(12, 12, str(digit), fontsize=12, ha='center', va='center', color='white')
-    
-    # Save the image to a file
-    plt.axis('off')
-    plt.savefig("temp.png", bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # Create a blank figure with no axes, set size to match target output (28x28)
+    fig, ax = plt.subplots(figsize=(3, 3), dpi=100)
+    ax.set_xlim(0, 3)
+    ax.set_ylim(0, 3)
+    ax.axis('off')  # Turn off axis
 
-    # Read the image back as a NumPy array
-    img = plt.imread("temp.png")[:, :, 0]
-    return img
+    # Draw the digit in the center
+    ax.text(
+        1.5, 1.5, str(digit),
+        fontsize=40, ha='center', va='center', color='white'
+    )
 
-if __name__ == "__main__":
-    # Example usage: generate an image of the digit 5
-    img = generate_image(7)
-    # No need for plt.show() in non-interactive environments
+    # Render the figure to a canvas
+    plt.draw()
+
+    # Extract the canvas buffer as RGBA
+    canvas = fig.canvas
+    image_data = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8)
+
+    # Get canvas dimensions and reshape the buffer
+    width, height = canvas.get_width_height()
+    image = image_data.reshape((height, width, 4))  # ARGB format (4 channels)
+
+    # Convert to grayscale by taking the red channel (or average of RGB)
+    image = image[:, :, 1] / 255.0  # Normalize to [0, 1] (take green channel here for grayscale)
+
+    # Resize to the target size (28x28) using PIL
+    image = Image.fromarray((image * 255).astype(np.uint8))  # Convert back to 8-bit image
+    image = image.resize(size, Image.Resampling.LANCZOS)  # Resize to 28x28 pixels
+    image = np.array(image) / 255.0  # Normalize back to [0, 1]
+
+    plt.close(fig)  # Close the figure to free resources
+
+    return image
